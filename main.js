@@ -50,7 +50,7 @@ function startTimer(day, timer) {
 
     Rx.Observable.from(timeSequence)
         .concatMap(obs => obs)
-        .subscribe(second => updateTimer(timer, second, 1));
+        .subscribe(second => updateTimer(timer, second, 1), failure, vibrateCompletion);
 }
 
 function updateTimer(timer, time, session) {
@@ -82,4 +82,14 @@ function template(day) {
         <div id="timer">00:00:00</div>
         <button id="start-timer">Start Timer</button>
     `
+}
+
+function failure(err) {
+    console.trace(err);
+}
+
+function vibrateCompletion() {
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(200, 50, 50, 200);
+    }
 }
