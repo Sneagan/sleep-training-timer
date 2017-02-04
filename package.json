@@ -4,7 +4,7 @@
   "description": "Infant sleep training timer.",
   "main": "main.js",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack --optimize-minimize"
   },
   "keywords": [
     "sleep",
