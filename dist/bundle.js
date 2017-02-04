@@ -5830,7 +5830,7 @@ exports = module.exports = __webpack_require__(70)();
 
 
 // module
-exports.push([module.i, "body {\n  font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif;\n  font-weight: 300;\n  font-size: 30px;\n  height: 100%;\n  padding: 0;\n  margin: 5px;\n  margin-top: 20px;\n  overflow: hidden;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  text-align: center;\n  background-color: black;\n  color: deeppink; }\n\nh3, p, #message {\n  padding: 0px;\n  margin: 0px;\n  font-size: 15px; }\n\n#wrapper {\n  width: 100%; }\n\n#day-selector {\n  display: flex;\n  align-items: center;\n  justify-content: center; }\n\n#day-editor {\n  cursor: pointer; }\n\nbutton {\n  width: 100%;\n  font-size: 30px;\n  margin-top: 10px;\n  background-color: black;\n  color: deeppink;\n  border: solid 1px deeppink; }\n\n.timer-wrapper {\n  padding-bottom: 20px;\n  padding-top: 10px;\n  margin-top: 10px;\n  border: solid 1px black; }\n", ""]);
+exports.push([module.i, "body {\n  font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif;\n  font-weight: 300;\n  font-size: 30px;\n  height: 100%;\n  padding: 0;\n  margin: 5px;\n  margin-top: 20px;\n  overflow: hidden;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  text-align: center;\n  background-color: black;\n  color: deeppink; }\n\nh3, p, #message {\n  padding: 0px;\n  margin: 0px;\n  font-size: 15px; }\n\n#wrapper {\n  width: 100%; }\n\n#day-selector {\n  display: flex;\n  align-items: center;\n  justify-content: center; }\n\n#day-editor {\n  cursor: pointer; }\n\nbutton {\n  width: 100%;\n  font-size: 30px;\n  margin-top: 10px;\n  background-color: black;\n  color: deeppink;\n  border: solid 1px deeppink;\n  height: 75px;\n  max-width: 500px; }\n\n.timer-wrapper {\n  padding-bottom: 20px;\n  padding-top: 10px;\n  margin-top: 10px;\n  border: solid 1px black; }\n", ""]);
 
 // exports
 
@@ -19817,7 +19817,7 @@ function startTimer(day, timer, messageContainer) {
     var maxTime = 0;
     var message = '';
     // Ferber intervals by day
-    var sequence = [[3, 5, 10], [5, 10, 12], [10, 12, 15], [12, 15, 17], [15, 17, 20], [17, 20, 25], [20, 25, 30]];
+    var sequence = [[3, 5, 10, 10, 10, 10], [5, 10, 12, 12, 12, 12], [10, 12, 15, 15, 15, 15], [12, 15, 17, 17, 17, 17], [15, 17, 20, 20, 20, 20], [17, 20, 25, 25, 25, 25], [20, 25, 30, 30, 30, 30]];
 
     --day;
     if (day > sequence.length - 1) {
