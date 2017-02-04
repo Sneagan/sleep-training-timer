@@ -5830,7 +5830,7 @@ exports = module.exports = __webpack_require__(70)();
 
 
 // module
-exports.push([module.i, "body {\n  width: 100%;\n  font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif;\n  font-weight: 300;\n  font-size: 30px;\n  overflow: hidden;\n  display: flex;\n  align-items: center;\n  justify-content: center; }\n\n#day-selector {\n  display: flex;\n  align-items: center;\n  justify-content: center; }\n\n#day-editor {\n  cursor: pointer; }\n", ""]);
+exports.push([module.i, "body {\n  font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif;\n  font-weight: 300;\n  font-size: 30px;\n  overflow: hidden;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  text-align: center;\n  background-color: black;\n  color: deeppink; }\n\nh3, p, #message {\n  padding: 0px;\n  margin: 0px;\n  font-size: 15px; }\n\n#wrapper {\n  width: 100%; }\n\n#day-selector {\n  display: flex;\n  align-items: center;\n  justify-content: center; }\n\n#day-editor {\n  cursor: pointer; }\n\nbutton {\n  width: 100%;\n  font-size: 30px;\n  margin-top: 10px;\n  background-color: black;\n  color: deeppink;\n  border: solid 1px deeppink; }\n\n.timer-wrapper {\n  padding-bottom: 20px;\n  padding-top: 10px;\n  margin-top: 10px;\n  border: solid 1px black; }\n", ""]);
 
 // exports
 
@@ -19788,6 +19788,7 @@ function app() {
     var body = document.body;
     var fragment = document.createDocumentFragment();
     var wrapper = document.createElement('div');
+    wrapper.id = 'wrapper';
     wrapper.innerHTML = template(currentDay);
     fragment.appendChild(wrapper);
     body.appendChild(fragment);
@@ -19796,6 +19797,7 @@ function app() {
     var decrement = _Rx2.default.Observable.fromEvent(document.getElementById('decrement'), 'click');
     var day = document.getElementById('day');
     var timer = document.getElementById('timer');
+    var messageContainer = document.getElementById('message');
     var startTimerButton = _Rx2.default.Observable.fromEvent(document.getElementById('start-timer'), 'click');
 
     increment.subscribe(function (e) {
@@ -19805,33 +19807,49 @@ function app() {
         return decrementDay(currentDay, day);
     });
     startTimerButton.subscribe(function (e) {
-        return startTimer(currentDay, timer);
+        return startTimer(currentDay, timer, messageContainer);
     });
 }
 
-function startTimer(day, timer) {
+function startTimer(day, timer, messageContainer) {
     var minutes = 60;
     var checkInterval = 1;
+    var maxTime = 0;
+    var message = '';
+    // Ferber intervals by day
     var sequence = [[3, 5, 10], [5, 10, 12], [10, 12, 15], [12, 15, 17], [15, 17, 20], [17, 20, 25], [20, 25, 30]];
 
-    var timeSequence = sequence[--day].reduce(function (acc, seq) {
-        acc.push(_Rx2.default.Observable.timer(1, 1000).take(seq * minutes));
-        acc.push(_Rx2.default.Observable.timer(1, 1000).take(checkInterval * minutes));
+    --day;
+    if (day > sequence.length - 1) {
+        day = sequence.length - 1;
+    }
+
+    var timeSequence = sequence[day].reduce(function (acc, seq) {
+        acc.push(_Rx2.default.Observable.timer(1, 1000).map(function (item) {
+            maxTime = seq * minutes;
+            message = 'Do not respond to cries for the duration.';
+            return item;
+        }).take(seq * minutes));
+        acc.push(_Rx2.default.Observable.timer(1, 1000).map(function (item) {
+            maxTime = checkInterval * minutes;
+            message = 'Time to reassure.';
+            return item;
+        }).take(checkInterval * minutes));
         return acc;
     }, []);
 
     _Rx2.default.Observable.from(timeSequence).concatMap(function (obs) {
         return obs;
     }).subscribe(function (second) {
-        return updateTimer(timer, second, 1);
-    });
+        return updateTimer(timer, maxTime - second, messageContainer, message);
+    }, failure, vibrateCompletion);
 }
 
-function updateTimer(timer, time, session) {
+function updateTimer(timer, time, messenger, sessionMessage) {
     // Time is in seconds so format it
-    console.log(time);
     var formatTime = new Date(time * 1000).toISOString().substr(11, 8);
     timer.innerHTML = '<div>' + formatTime + '</div>';
+    messenger.innerHTML = '<div>' + sessionMessage + '</div>';
     return time;
 }
 
@@ -19846,7 +19864,17 @@ function decrementDay(originalDay, dayElement) {
 }
 
 function template(day) {
-    return '\n        <div id="day-selector">\n            <div id="day">Day ' + day + '</div>\n            <div id="day-editor">\n                <div id="increment">&#8593;</div>\n                <div id="decrement">&#8595;</div>\n            </div>\n        </div>\n        <div id="timer">00:00:00</div>\n        <button id="start-timer">Start Timer</button>\n    ';
+    return '\n        <h3>Sleep Training Timer</h3>\n        <p>Timer will alternate between waiting and comforting periods.</p>\n        <div class="timer-wrapper">\n            <div id="day-selector">\n                <div id="day">Day ' + day + '</div>\n                <div id="day-editor">\n                    <div id="increment">&#8593;</div>\n                    <div id="decrement">&#8595;</div>\n                </div>\n            </div>\n            <div id="timer">00:00:00</div>\n        </div>\n        <div id="message"></div>\n        <button id="start-timer">Start Timer</button>\n    ';
+}
+
+function failure(err) {
+    console.trace(err);
+}
+
+function vibrateCompletion() {
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(200, 50, 50, 200);
+    }
 }
 
 /***/ })

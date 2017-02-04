@@ -26,7 +26,8 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Infant Sleep Training Timer',
-            filename: 'index.html'
+            filename: 'index.html',
+            template: 'index.html'
         })
     ]
 };

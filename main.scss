@@ -1,5 +1,4 @@
 body {
-  width: 100%;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
   font-size: 30px;
@@ -7,6 +6,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+
+  background-color: black;
+  color: deeppink;
+}
+
+h3, p, #message {
+  padding: 0px;
+  margin: 0px;
+  font-size: 15px;
+}
+
+#wrapper {
+  width: 100%;
 }
 
 #day-selector {
@@ -17,4 +30,20 @@ body {
 
 #day-editor {
   cursor: pointer;
+}
+
+button {
+  width: 100%;
+  font-size: 30px;
+  margin-top: 10px;
+  background-color: black;
+  color: deeppink;
+  border: solid 1px deeppink;
+}
+
+.timer-wrapper {
+  padding-bottom: 20px;
+  padding-top: 10px;
+  margin-top: 10px;
+  border: solid 1px black;
 }
