@@ -1,0 +1,7 @@
+[package]
+name = "sleep-training-timer"
+version = "0.1.0"
+authors = ["jackson"]
+
+[dependencies]
+futures = "0.1.17"
