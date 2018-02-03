@@ -1,7 +1,7 @@
 use futures::Future;
 use std::time::{Duration, Instant};
 
-struct SleepTimer {
+pub struct SleepTimer {
   duration: Duration,
   timer: Option<Instant>,
   start_time: Option<Instant>,
@@ -9,12 +9,15 @@ struct SleepTimer {
 
 impl SleepTimer {
     fn start(&mut self) {
+        // I don't think this is functioning the way I thought it was when I wrote it. I think that
+        // I need to do something a bit different to get it to set the running Instant as the
+        // instant value for the object.
         if let Some(ref mut x) = self.start_time {
-            *x = Instant::now();
+            *x = Instant::now()
         }
     }
 
-    fn time_passed(self) -> Result<u64, &'static str> {
+    pub fn time_passed(&self) -> Result<u64, &'static str> {
         match self.start_time {
             Some(start_time) => Ok(
                 start_time
@@ -36,15 +39,16 @@ pub struct TimerManager {
 }
 
 impl TimerManager {
-    pub fn new() -> TimerManager {
+    pub fn new(day: i32) -> TimerManager {
         TimerManager{
-            timer_collection: timer_sequence_for_day(1),
+            timer_collection: timer_sequence_for_day(day),
             current_timer: 0,
         }
     }
 
-    fn start_timer_sequence(&mut self) {
+    pub fn start_timer_sequence(&mut self) -> &SleepTimer {
         self.timer_collection.sleep_timers[0].start();
+        &self.timer_collection.sleep_timers[0]
     }
 }
 
