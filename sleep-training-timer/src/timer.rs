@@ -8,7 +8,7 @@ struct SleepTimer {
 }
 
 impl SleepTimer {
-    fn start(mut self) {
+    fn start(&mut self) {
         if let Some(ref mut x) = self.start_time {
             *x = Instant::now();
         }
@@ -43,9 +43,8 @@ impl TimerManager {
         }
     }
 
-    fn start_timer_sequence(&self) -> Result<(), ()> {
-        &self.timer_collection.sleep_timers[0].start();
-        Ok(())
+    fn start_timer_sequence(&mut self) {
+        self.timer_collection.sleep_timers[0].start();
     }
 }
 
