@@ -47,8 +47,7 @@ impl TimerManager {
     }
 
     pub fn start_timer_sequence(&mut self) -> &SleepTimer {
-        self.timer_collection.sleep_timers[self.current_timer].start();
-        &self.timer_collection.sleep_timers[self.current_timer]
+        self.timer_collection.sleep_timers[self.current_timer].start()
     }
 }
 
