@@ -35,7 +35,7 @@ pub struct TimerSequence {
 
 pub struct TimerManager {
     timer_collection: TimerSequence,
-    current_timer: i32,
+    current_timer: usize,
 }
 
 impl TimerManager {
@@ -47,8 +47,8 @@ impl TimerManager {
     }
 
     pub fn start_timer_sequence(&mut self) -> &SleepTimer {
-        self.timer_collection.sleep_timers[0].start();
-        &self.timer_collection.sleep_timers[0]
+        self.timer_collection.sleep_timers[self.current_timer].start();
+        &self.timer_collection.sleep_timers[self.current_timer]
     }
 }
 
