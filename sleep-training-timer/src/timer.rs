@@ -1,6 +1,7 @@
 use futures::Future;
 use std::time::{Duration, Instant};
 
+#[derive(Debug)]
 pub struct SleepTimer {
   duration: Duration,
   timer: Option<Instant>,
@@ -8,16 +9,13 @@ pub struct SleepTimer {
 }
 
 impl SleepTimer {
-    fn start(&mut self) {
-        // I don't think this is functioning the way I thought it was when I wrote it. I think that
-        // I need to do something a bit different to get it to set the running Instant as the
-        // instant value for the object.
-        if let Some(ref mut x) = self.start_time {
-            *x = Instant::now()
-        }
+    fn start(&mut self) -> &mut SleepTimer {
+        self.start_time = Some(Instant::now());
+        self
     }
 
     pub fn time_passed(&self) -> Result<u64, &'static str> {
+        println!("{:?}", self);
         match self.start_time {
             Some(start_time) => Ok(
                 start_time
@@ -29,25 +27,28 @@ impl SleepTimer {
     }
 }
 
+#[derive(Debug)]
 pub struct TimerSequence {
-    sleep_timers: Vec<SleepTimer>
+    pub sleep_timers: Vec<SleepTimer>
 }
 
+#[derive(Debug)]
 pub struct TimerManager {
-    timer_collection: TimerSequence,
-    current_timer: usize,
+    pub timer_collection: TimerSequence,
+    pub current_timer: usize,
 }
 
 impl TimerManager {
     pub fn new(day: i32) -> TimerManager {
-        TimerManager{
+        TimerManager {
             timer_collection: timer_sequence_for_day(day),
             current_timer: 0,
         }
     }
 
-    pub fn start_timer_sequence(&mut self) -> &SleepTimer {
-        self.timer_collection.sleep_timers[self.current_timer].start()
+    pub fn start_timer_sequence(&mut self) -> &mut SleepTimer {
+        let timer = &mut self.timer_collection.sleep_timers[self.current_timer];
+        timer.start()
     }
 }
 
