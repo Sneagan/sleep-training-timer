@@ -15,7 +15,6 @@ impl SleepTimer {
     }
 
     pub fn time_passed(&self) -> Result<u64, &'static str> {
-        println!("{:?}", self);
         match self.start_time {
             Some(start_time) => Ok(
                 start_time
@@ -77,4 +76,4 @@ pub fn timer_sequence_for_day(day_number: i32) -> TimerSequence {
         .map(int_to_timer)
         .collect()
     }
-} 
+}
