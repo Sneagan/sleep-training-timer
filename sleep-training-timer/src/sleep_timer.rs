@@ -13,6 +13,9 @@ pub struct SleepTimer {
 impl SleepTimer {
     fn start(&mut self) -> &mut SleepTimer {
         self.start_time = Some(Instant::now());
+        // I think that the issue here is that the timer is running
+        // on a different thread, so mutating values doesn't work. 
+        // Maybe a `move` is in order?
         if let Some(ref timer) = self.timer {
             timer.schedule_repeating(self.duration, || {
                 println!("Yo");
