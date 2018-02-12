@@ -1,16 +1,28 @@
-use futures::Future;
-use std::time::{Duration, Instant};
+use std::time::Instant;
+use chrono::Duration;
+use timer::Timer;
 
-#[derive(Debug)]
 pub struct SleepTimer {
   duration: Duration,
-  timer: Option<Instant>,
+  timer: Option<Timer>,
+  log_timer: Option<Timer>,
   start_time: Option<Instant>,
+  log_time: u64,
 }
 
 impl SleepTimer {
     fn start(&mut self) -> &mut SleepTimer {
         self.start_time = Some(Instant::now());
+        if let Some(ref timer) = self.timer {
+            timer.schedule_repeating(self.duration, || {
+                println!("Yo");
+            });
+        }
+        if let Some(ref log_timer) = self.log_timer {
+            log_timer.schedule_repeating(self.duration, || {
+                self.log_time += 1;
+            });
+        }
         self
     }
 
@@ -26,12 +38,10 @@ impl SleepTimer {
     }
 }
 
-#[derive(Debug)]
 pub struct TimerSequence {
     pub sleep_timers: Vec<SleepTimer>
 }
 
-#[derive(Debug)]
 pub struct TimerManager {
     pub timer_collection: TimerSequence,
     pub current_timer: usize,
@@ -49,6 +59,8 @@ impl TimerManager {
         let timer = &mut self.timer_collection.sleep_timers[self.current_timer];
         timer.start()
     }
+
+    fn start_next_timer() {}
 }
 
 pub fn timer_sequence_for_day(day_number: i32) -> TimerSequence {
@@ -63,13 +75,6 @@ pub fn timer_sequence_for_day(day_number: i32) -> TimerSequence {
         _ => vec![0],
     };
 
-    fn int_to_timer(duration: u64) -> SleepTimer {
-        SleepTimer{
-            duration: Duration::new(duration*60, 0),
-            timer: None,
-            start_time: None,
-        }
-    }
 
     TimerSequence{
         sleep_timers: durations.into_iter()
@@ -77,3 +82,14 @@ pub fn timer_sequence_for_day(day_number: i32) -> TimerSequence {
         .collect()
     }
 }
+
+fn int_to_timer(duration: i64) -> SleepTimer {
+    SleepTimer{
+        duration: Duration::seconds(duration),
+        start_time: None,
+        timer: Some(Timer::new()),
+        log_timer:  Some(Timer::new()),
+        log_time: 0,
+    }
+}
+
