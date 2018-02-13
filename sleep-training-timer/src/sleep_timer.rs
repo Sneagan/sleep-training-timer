@@ -1,13 +1,14 @@
 use std::time::Instant;
 use chrono::Duration;
 use timer::Timer;
+use std::thread;
+use std::sync::{Arc, Mutex};
 
 pub struct SleepTimer {
   duration: Duration,
   timer: Option<Timer>,
-  log_timer: Option<Timer>,
   start_time: Option<Instant>,
-  log_time: u64,
+  log_time: Arc<Mutex<u64>>,
 }
 
 impl SleepTimer {
@@ -17,27 +18,30 @@ impl SleepTimer {
         // on a different thread, so mutating values doesn't work. 
         // Maybe a `move` is in order?
         if let Some(ref timer) = self.timer {
-            timer.schedule_repeating(self.duration, || {
-                println!("Yo");
+            let count = self.log_time.clone();
+            timer.schedule_repeating(Duration::seconds(1), move || {
+                *count.lock().unwrap() += 1;
             });
-        }
-        if let Some(ref log_timer) = self.log_timer {
-            log_timer.schedule_repeating(self.duration, || {
-                self.log_time += 1;
-            });
+            self.log_time = *count;
         }
         self
     }
 
-    pub fn time_passed(&self) -> Result<u64, &'static str> {
-        match self.start_time {
-            Some(start_time) => Ok(
-                start_time
-                    .elapsed()
-                    .as_secs()
-            ),
-            None => Err("The timer has not been started"),
-        }
+    pub fn time_passed(&self) -> u64 {
+        let guard = match self.log_time.lock() {
+            Ok(guard) => guard,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+
+        *guard
+        // match self.start_time {
+        //     Some(start_time) => Ok(
+        //         start_time
+        //             .elapsed()
+        //             .as_secs()
+        //     ),
+        //     None => Err("The timer has not been started"),
+        // }
     }
 }
 
@@ -91,8 +95,7 @@ fn int_to_timer(duration: i64) -> SleepTimer {
         duration: Duration::seconds(duration),
         start_time: None,
         timer: Some(Timer::new()),
-        log_timer:  Some(Timer::new()),
-        log_time: 0,
+        log_time: Arc::new(Mutex::new(0)),
     }
 }
 
