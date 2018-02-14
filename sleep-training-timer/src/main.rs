@@ -1,6 +1,6 @@
-extern crate timer;
-extern crate chrono;
-#[macro_use] extern crate dbg;
+extern crate tokio_core;
+extern crate tokio_timer;
+extern crate futures;
 
 use std::{thread, time};
 

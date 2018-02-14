@@ -1,47 +1,37 @@
-use std::time::Instant;
-use chrono::Duration;
-use timer::Timer;
-use std::thread;
-use std::sync::{Arc, Mutex};
+use tokio_timer::*;
+use futures::*;
+use std::time::*;
+use tokio_core::reactor::Core;
 
 pub struct SleepTimer {
   duration: Duration,
-  timer: Option<Timer>,
+  timer: Timer,
   start_time: Option<Instant>,
-  log_time: Arc<Mutex<u64>>,
+  ms_passed: u64,
 }
 
 impl SleepTimer {
     fn start(&mut self) -> &mut SleepTimer {
         self.start_time = Some(Instant::now());
-        // I think that the issue here is that the timer is running
-        // on a different thread, so mutating values doesn't work. 
-        // Maybe a `move` is in order?
-        if let Some(ref timer) = self.timer {
-            let count = self.log_time.clone();
-            timer.schedule_repeating(Duration::seconds(1), move || {
-                *count.lock().unwrap() += 1;
-            });
-            self.log_time = *count;
-        }
+        let mut core = Core::new().unwrap();
+        let ms_sleeper = self.timer.interval(Duration::from_millis(1));
+        let ms_duration = self.duration.as_secs() * 60;
+        let mut passed = 0;
+        let logger = ms_sleeper
+            .take(ms_duration)
+            .map(|data| {
+                passed += 1;
+                passed
+            })
+            .into_future();
+
+        let result = core.run(logger);
+        println!("{:?}", result);
         self
     }
 
     pub fn time_passed(&self) -> u64 {
-        let guard = match self.log_time.lock() {
-            Ok(guard) => guard,
-            Err(poisoned) => poisoned.into_inner(),
-        };
-
-        *guard
-        // match self.start_time {
-        //     Some(start_time) => Ok(
-        //         start_time
-        //             .elapsed()
-        //             .as_secs()
-        //     ),
-        //     None => Err("The timer has not been started"),
-        // }
+        self.ms_passed
     }
 }
 
@@ -90,12 +80,12 @@ pub fn timer_sequence_for_day(day_number: i32) -> TimerSequence {
     }
 }
 
-fn int_to_timer(duration: i64) -> SleepTimer {
+fn int_to_timer(duration: u64) -> SleepTimer {
     SleepTimer{
-        duration: Duration::seconds(duration),
+        duration: Duration::new(duration*60, 0),
         start_time: None,
-        timer: Some(Timer::new()),
-        log_time: Arc::new(Mutex::new(0)),
+        timer: Timer::default(),
+        ms_passed: 0,
     }
 }
 

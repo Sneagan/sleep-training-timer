@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["jackson"]
 
 [dependencies]
-timer = "0.2"
-chrono = "0.4"
-dbg = "1.0.4"
+tokio-core = "0.1.12"
+tokio-timer = "0.1"
+futures = "0.1.18"
