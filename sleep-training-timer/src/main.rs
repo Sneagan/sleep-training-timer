@@ -1,3 +1,4 @@
+extern crate chrono;
 extern crate tokio_core;
 extern crate tokio_timer;
 extern crate futures;

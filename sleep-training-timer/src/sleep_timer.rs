@@ -19,14 +19,14 @@ impl SleepTimer {
         let mut passed = 0;
         let logger = ms_sleeper
             .take(ms_duration)
-            .map(|data| {
+            .map(|()| {
                 passed += 1;
+                println!("{:?}", Duration::seconds(Duration::from_millis(passed)));
                 passed
             })
-            .into_future();
+            .collect();
 
-        let result = core.run(logger);
-        println!("{:?}", result);
+        let result = core.run(logger).unwrap();
         self
     }
 
