@@ -1,10 +1,14 @@
 [package]
 name = "sleep-training-timer"
 version = "0.1.0"
-authors = ["jackson"]
+authors = ["Jackson Egan"]
 
 [dependencies]
 tokio-timer = "0.1"
-chrono = "0.4"
 tokio = "0.1"
 futures = "0.1"
+time = "0.1"
+clap = "2"
+indicatif = "0.9.0"
+console = "0.6.1"
+
