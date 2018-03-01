@@ -1,5 +1,4 @@
 extern crate time;
-#[macro_use]
 extern crate futures;
 extern crate tokio;
 extern crate tokio_timer;
@@ -8,11 +7,10 @@ extern crate indicatif;
 extern crate console;
 
 use indicatif::{ProgressBar, ProgressStyle};
-use clap::{Arg, App, SubCommand};
+use clap::{Arg, App};
 use tokio_timer::*;
-use tokio::executor::current_thread;
 use time::{SteadyTime, Duration};
-use futures::{Future, Stream, Async};
+use futures::{Future, Stream};
 
 
 fn main() {
@@ -28,24 +26,31 @@ fn main() {
              .required(true))
         .get_matches();
     let night = matches.value_of("night").unwrap_or("1");
-    let seconds_passed = timer_sequence_for_day(night.parse::<i32>().unwrap());
+    timer_sequence_for_day(night.parse::<i32>().unwrap());
 
     pub fn timer_sequence_for_day(day_number: i32) -> i32 {
         let durations: Vec<u64> = match day_number {
-            1 => vec![3, 5, 10, 10, 10, 10],
-            2 => vec![5, 10, 12, 12, 12, 12],
-            3 => vec![10, 12, 15, 15, 15, 15],
-            4 => vec![12, 15, 17, 17, 17, 17],
-            5 => vec![15, 17, 20, 20, 20, 20],
-            6 => vec![17, 20, 25, 25, 25, 25],
-            7 => vec![20, 25, 30, 30, 30, 30],
+            1 => vec![3, 1, 5, 1, 10, 1, 10, 1, 10, 1, 10],
+            2 => vec![5, 1, 10, 1, 12, 1, 12, 1, 12, 1, 12],
+            3 => vec![10, 1, 12, 1, 15, 1, 15, 1, 15, 1, 15],
+            4 => vec![12, 1, 15, 1, 17, 1, 17, 1, 17, 1, 17],
+            5 => vec![15, 1, 17, 1, 20, 1, 20, 1, 20, 1, 20],
+            6 => vec![17, 1, 20, 1, 25, 1, 25, 1, 25, 1, 25],
+            7 => vec![20, 1, 25, 1, 30, 1, 30, 1, 30, 1, 30],
             _ => vec![0],
         };
         
         for (i, duration) in durations.iter().enumerate() {
             let duration_fmt: i64 = duration.to_string().parse::<i64>().unwrap();
             let start_time_plus = SteadyTime::now() + Duration::minutes(duration_fmt) + Duration::seconds(2);
-            println!("Interval {}.", i+1);
+
+            if (i.to_string().parse::<i32>().unwrap() % 2 == 0) {
+                println!("Interval {}. Allow baby to cry.", i+1);
+            }
+            else {
+                println!("Feel free to comfort baby if needed until timer completes.")
+            }
+
             let bar = ProgressBar::new(duration*60);
             bar.set_style(ProgressStyle::default_bar()
                 .template("[{eta_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}"));
