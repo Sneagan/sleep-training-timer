@@ -39,13 +39,16 @@ fn main() {
             7 => vec![20, 1, 25, 1, 30, 1, 30, 1, 30, 1, 30],
             _ => vec![0],
         };
+
+        let mut interval = 1;
         
         for (i, duration) in durations.iter().enumerate() {
             let duration_fmt: i64 = duration.to_string().parse::<i64>().unwrap();
             let start_time_plus = SteadyTime::now() + Duration::minutes(duration_fmt) + Duration::seconds(2);
 
-            if (i.to_string().parse::<i32>().unwrap() % 2 == 0) {
-                println!("Interval {}. Allow baby to cry.", i+1);
+            if i.to_string().parse::<i32>().unwrap() % 2 == 0 {
+                println!("Interval {}. Allow baby to cry.", interval);
+                interval = interval + 1;
             }
             else {
                 println!("Feel free to comfort baby if needed until timer completes.")
